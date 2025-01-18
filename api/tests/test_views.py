@@ -73,6 +73,7 @@ class GetAllJobsTest(TestCase):
         jobs = Job.objects.filter(state="NEW")
         serializer = JobSerializer(jobs, many=True)
         self.assertEqual(len(response.data), len(serializer.data))
+        self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_all_jobs_by_priority(self):
@@ -80,6 +81,7 @@ class GetAllJobsTest(TestCase):
         jobs = Job.objects.filter(priority=1)
         serializer = JobSerializer(jobs, many=True)
         self.assertEqual(len(response.data), len(serializer.data))
+        self.assertEqual((response.data), (serializer.data))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_all_jobs_by_state_and_priority(self):
@@ -87,6 +89,7 @@ class GetAllJobsTest(TestCase):
         jobs = Job.objects.filter(state="NEW", priority=1)
         serializer = JobSerializer(jobs, many=True)
         self.assertEqual(len(response.data), len(serializer.data))
+        self.assertEqual((response.data), (serializer.data))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -160,44 +163,135 @@ class CreateNewJobTest(TestCase):
             "company_name": "Docomo",
             "location": "Roppongi",
             "commute_time": 45,
-            "description": "Mid-level software engineering position for MerPay",
+            "description": "Mid-level software engineering position",
             "state": "NEW",
-            "created_at": "2024-12-13T22:30:04.000Z",
-            "salary": 1000000,
+            "salary": 1_000_000,
             "vacation_days": 14,
             "priority": 1,
         }
 
-        self.invalid_payload = {
-            "job_name": "",
-            "company_name": "Docomo",
-            "location": "Roppongi",
-            "commute_time": 45,
-            "description": "Mid-level software engineering position for MerPay",
-            "state": "NEW",
-            "created_at": "2024-12-13T22:30:04.000Z",
-            "salary": 1000000,
-            "vacation_days": 14,
-            "priority": 1,
-        }
+        self.invalid_payload_empty_job_name = self.valid_payload.copy()
+        self.invalid_payload_empty_job_name["job_name"] = ""
+
+        self.invalid_payload_invalid_job_name = self.valid_payload.copy()
+        self.invalid_payload_invalid_job_name["job_name"] = (
+            "This job name is way too long to be a real job name."
+        )
+
+        self.invalid_payload_empty_company_name = self.valid_payload.copy()
+        self.invalid_payload_empty_company_name["company_name"] = ""
+
+        self.invalid_payload_invalid_company_name = self.valid_payload.copy()
+        self.invalid_payload_invalid_company_name["company_name"] = (
+            "This company name is way too long to be a real company name."
+        )
+
+        self.invalid_payload_invalid_location = self.valid_payload.copy()
+        self.invalid_payload_invalid_location["location"] = (
+            "This location is way too long to be a real location."
+        )
+
+        self.invalid_payload_invalid_description = self.valid_payload.copy()
+        self.invalid_payload_invalid_description["description"] = (
+            "This description is way too long to be a real description." * 5
+        )
+
+        self.invalid_payload_invalid_state = self.valid_payload.copy()
+        self.invalid_payload_invalid_state["state"] = "INVALID"
+
+        self.invalid_payload_invalid_priority = self.valid_payload.copy()
+        self.invalid_payload_invalid_priority["priority"] = "INVALID"
 
     def test_create_valid_job(self):
+        test_data = json.dumps(self.valid_payload)
         response = client.post(
             reverse("job_list"),
-            data=json.dumps(self.valid_payload),
+            data=test_data,
             content_type="application/json",
         )
+        self.assertEqual(response.data["job_name"], "Software Developer")
+        self.assertEqual(response.data["company_name"], "Docomo")
+        self.assertEqual(response.data["location"], "Roppongi")
+        self.assertEqual(response.data["commute_time"], 45)
+        self.assertEqual(
+            response.data["description"], "Mid-level software engineering position"
+        )
+        self.assertEqual(response.data["state"], "NEW")
+        self.assertIsNotNone(response.data["created_at"])
+        self.assertEqual(response.data["salary"], 1_000_000)
+        self.assertEqual(response.data["vacation_days"], 14)
+        self.assertEqual(response.data["priority"], 1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_invalid_job(self):
+    # JOB NAME
+    def test_create_invalid_job_job_name(self):
         response = client.post(
             reverse("job_list"),
-            data=json.dumps(self.invalid_payload),
+            data=json.dumps(self.invalid_payload_empty_job_name),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # todo add more specific tests for invalid state, prio, datetime etc...
+    def test_create_invalid_job_job_name_max_len_exceeded(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_invalid_job_name),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # COMPANY NAME
+    def test_create_invalid_job_empty_company_name(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_empty_company_name),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_invalid_job_company_name_max_len_exceeded(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_invalid_company_name),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # LOCATION
+    def test_create_invalid_job_location_max_len_exceeded(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_invalid_location),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # DESCRIPTION
+    def test_create_invalid_job_description_max_len_exceeded(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_invalid_description),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # STATE
+    def test_create_invalid_job_wrong_state(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_invalid_state),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # PRIORITY
+    def test_create_invalid_job_wrong_priority(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_invalid_priority),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateSingleJobTest(TestCase):
@@ -240,18 +334,37 @@ class UpdateSingleJobTest(TestCase):
             "priority": 1,
         }
 
-        self.invalid_payload = {
-            "job_name": "",
-            "company_name": "Google",
-            "location": "Tokyo",
-            "commute_time": 45,
-            "description": "DevOps Job using Python and FastAPI",
-            "state": "REJECTED",
-            "created_at": "2024-12-13T22:30:04.000Z",
-            "salary": 1000000,
-            "vacation_days": 14,
-            "priority": 1,
-        }
+        self.invalid_payload_empty_job_name = self.valid_payload.copy()
+        self.invalid_payload_empty_job_name["job_name"] = ""
+
+        self.invalid_payload_invalid_job_name = self.valid_payload.copy()
+        self.invalid_payload_invalid_job_name["job_name"] = (
+            "This job name is way too long to be a real job name."
+        )
+
+        self.invalid_payload_empty_company_name = self.valid_payload.copy()
+        self.invalid_payload_empty_company_name["company_name"] = ""
+
+        self.invalid_payload_invalid_company_name = self.valid_payload.copy()
+        self.invalid_payload_invalid_company_name["company_name"] = (
+            "This company name is way too long to be a real company name."
+        )
+
+        self.invalid_payload_invalid_location = self.valid_payload.copy()
+        self.invalid_payload_invalid_location["location"] = (
+            "This location is way too long to be a real location."
+        )
+
+        self.invalid_payload_invalid_description = self.valid_payload.copy()
+        self.invalid_payload_invalid_description["description"] = (
+            "This description is way too long to be a real description." * 5
+        )
+
+        self.invalid_payload_state = self.valid_payload.copy()
+        self.invalid_payload_state["state"] = "TO BE DONE"
+
+        self.invalid_payload_priority = self.valid_payload.copy()
+        self.invalid_payload_priority["priority"] = 15
 
     def test_valid_update_job(self):
         response = client.put(
@@ -261,15 +374,83 @@ class UpdateSingleJobTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_invalid_update_job(self):
+    # JOB NAME
+    def test_invalid_update_job_empty_job_name(self):
         response = client.put(
             reverse("job_detail", kwargs={"pk": self.job_google.pk}),
-            data=json.dumps(self.invalid_payload),
+            data=json.dumps(self.invalid_payload_empty_job_name),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # todo add more specific tests for invalid state, prio, datetime etc...
+    def test_invalid_update_job_job_name_max_len_exceeded(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.invalid_payload_invalid_job_name),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # COMPANY
+    def test_invalid_update_job_empty_company_name(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.invalid_payload_empty_company_name),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_update_job_company_name_max_len_exceeded(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.invalid_payload_invalid_company_name),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_update_job_wrong_job_company_and_job_name(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # LOCATION
+    def test_invalid_update_job_location_max_len_exceeded(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.invalid_payload_invalid_location),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # DESCRIPTION
+    def test_invalid_update_job_description_max_len_exceeded(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.invalid_payload_invalid_description),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # STATE
+    def test_invalid_update_job_wrong_state(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.invalid_payload_state),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # PRIORITY
+    def test_invalid_update_job_wrong_priority(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            data=json.dumps(self.invalid_payload_priority),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class DeleteSingleJobTest(TestCase):

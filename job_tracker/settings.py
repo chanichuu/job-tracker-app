@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "api.apps.ApiConfig",
     "rest_framework",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -140,4 +141,13 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [],
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Job Tracker API",
+    "DESCRIPTION": "API documentation for the Job Tracker App. The API provides endpoints to create, get, update and delete jobs.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
 }
