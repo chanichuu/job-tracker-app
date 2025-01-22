@@ -18,7 +18,7 @@ class Job(models.Model):
     job_name = models.CharField(max_length=24)
     company_name = models.CharField(max_length=24)
     location = models.CharField(max_length=24)
-    commute_time = models.IntegerField()
+    commute_time = models.PositiveIntegerField()
     description = models.CharField(max_length=256)
     state = models.CharField(
         max_length=9,
@@ -26,8 +26,8 @@ class Job(models.Model):
         default=State.NEW,
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    salary = models.IntegerField()
-    vacation_days = models.IntegerField()
+    salary = models.PositiveIntegerField()
+    vacation_days = models.PositiveIntegerField()
     priority = models.IntegerField(choices=Priority.choices, default=Priority.LOW)
 
     def __repr__(self):

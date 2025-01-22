@@ -9,7 +9,7 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path("jobs", JobList.as_view(), name="job_list"),
-    path("jobs/<int:pk>/", JobDetail.as_view(), name="job_detail"),
+    path("jobs/<int:pk>", JobDetail.as_view(), name="job_detail"),
     # OpenAPI Schema:
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     # OpenAPI UI:

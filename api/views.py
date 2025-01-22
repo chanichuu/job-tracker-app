@@ -5,7 +5,9 @@ from .serializers import JobSerializer
 from .models import Job
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 
 
@@ -13,6 +15,9 @@ class JobList(APIView):
     """
     List all jobs, or create a new job.
     """
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         parameters=[
@@ -30,7 +35,7 @@ class JobList(APIView):
                 description="Filter by priority. Valid values: 1, 2, 3",
             ),
         ],
-        responses={200: JobSerializer(many=True)},
+        responses={200: JobSerializer(many=True), 401: None},
         methods=["GET"],
         description="Get all jobs or jobs filtered by state or priority.",
     )
@@ -49,7 +54,7 @@ class JobList(APIView):
 
     @extend_schema(
         request=JobSerializer,
-        responses={201: JobSerializer, 400: None, 404: None},
+        responses={201: JobSerializer, 400: None, 401: None, 404: None},
         methods=["POST"],
         description="Create a new job.",
     )
@@ -76,6 +81,9 @@ class JobDetail(APIView):
     Retrieve, update or delete a job instance.
     """
 
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get_object(self, pk):
         try:
             return Job.objects.get(pk=pk)
@@ -83,7 +91,7 @@ class JobDetail(APIView):
             raise Http404
 
     @extend_schema(
-        responses={200: JobSerializer, 404: None},
+        responses={200: JobSerializer, 401: None, 404: None},
         methods=["GET"],
         description="Get a job by id.",
     )
@@ -95,7 +103,7 @@ class JobDetail(APIView):
 
     @extend_schema(
         request=JobSerializer,
-        responses={200: JobSerializer, 400: None, 404: None},
+        responses={200: JobSerializer, 400: None, 401: None, 404: None},
         methods=["PUT"],
         description="Update a job by id.",
     )
@@ -122,7 +130,11 @@ class JobDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
-        responses={204: None, 404: None},
+        responses={
+            204: None,
+            401: {"detail": "Authentication credentials were not provided."},
+            404: None,
+        },
         methods=["DELETE"],
         description="Delete a job by id.",
     )

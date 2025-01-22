@@ -1,19 +1,30 @@
 import json
 from rest_framework import status
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from ..models import Job
 from ..serializers import JobSerializer
+from django.contrib.auth.models import User
+from rest_framework.test import APIClient
+
+
+def init_test_user():
+    user = User.objects.create(username="TEST_USER")
+    user.set_password("1234")
+    user.save()
+    client.force_authenticate(user=user)
 
 
 # initialize the APIClient app
-client = Client()
+client = APIClient()
 
 
 class GetAllJobsTest(TestCase):
     """Test module for GET all jobs API"""
 
     def setUp(self):
+        init_test_user()
+
         Job.objects.create(
             job_name="Software Developer",
             company_name="Mercarci",
@@ -97,6 +108,8 @@ class GetSingleJobTest(TestCase):
     """Test module for GET single Job API"""
 
     def setUp(self):
+        init_test_user()
+
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
             company_name="Mercarci",
@@ -158,6 +171,8 @@ class CreateNewJobTest(TestCase):
     """Test module for inserting a new Job"""
 
     def setUp(self):
+        init_test_user()
+
         self.valid_payload = {
             "job_name": "Software Developer",
             "company_name": "Docomo",
@@ -201,6 +216,15 @@ class CreateNewJobTest(TestCase):
 
         self.invalid_payload_invalid_priority = self.valid_payload.copy()
         self.invalid_payload_invalid_priority["priority"] = "INVALID"
+
+        self.invalid_payload_negative_salary = self.valid_payload.copy()
+        self.invalid_payload_negative_salary["salary"] = -1000
+
+        self.invalid_payload_negative_commute_time = self.valid_payload.copy()
+        self.invalid_payload_negative_commute_time["commute_time"] = -60
+
+        self.invalid_payload_negative_vacation_days = self.valid_payload.copy()
+        self.invalid_payload_negative_vacation_days["vacation_days"] = -10
 
     def test_create_valid_job(self):
         test_data = json.dumps(self.valid_payload)
@@ -293,11 +317,40 @@ class CreateNewJobTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    # SALARY
+    def test_create_invalid_job_negative_salary(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_negative_salary),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # COMMUTE TIME
+    def test_create_invalid_job_negative_commute_time(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_negative_commute_time),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # VACATION DAYS
+    def test_create_invalid_job_negative_vacation_days(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_negative_vacation_days),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class UpdateSingleJobTest(TestCase):
     """Test module for updating an existing Job record"""
 
     def setUp(self):
+        init_test_user()
+
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
             company_name="Mercarci",
@@ -366,6 +419,15 @@ class UpdateSingleJobTest(TestCase):
         self.invalid_payload_priority = self.valid_payload.copy()
         self.invalid_payload_priority["priority"] = 15
 
+        self.invalid_payload_negative_salary = self.valid_payload.copy()
+        self.invalid_payload_negative_salary["salary"] = -1000
+
+        self.invalid_payload_negative_commute_time = self.valid_payload.copy()
+        self.invalid_payload_negative_commute_time["commute_time"] = -60
+
+        self.invalid_payload_negative_vacation_days = self.valid_payload.copy()
+        self.invalid_payload_negative_vacation_days["vacation_days"] = -10
+
     def test_valid_update_job(self):
         response = client.put(
             reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
@@ -377,7 +439,7 @@ class UpdateSingleJobTest(TestCase):
     # JOB NAME
     def test_invalid_update_job_empty_job_name(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_empty_job_name),
             content_type="application/json",
         )
@@ -385,7 +447,7 @@ class UpdateSingleJobTest(TestCase):
 
     def test_invalid_update_job_job_name_max_len_exceeded(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_invalid_job_name),
             content_type="application/json",
         )
@@ -394,7 +456,7 @@ class UpdateSingleJobTest(TestCase):
     # COMPANY
     def test_invalid_update_job_empty_company_name(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_empty_company_name),
             content_type="application/json",
         )
@@ -402,7 +464,7 @@ class UpdateSingleJobTest(TestCase):
 
     def test_invalid_update_job_company_name_max_len_exceeded(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_invalid_company_name),
             content_type="application/json",
         )
@@ -419,7 +481,7 @@ class UpdateSingleJobTest(TestCase):
     # LOCATION
     def test_invalid_update_job_location_max_len_exceeded(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_invalid_location),
             content_type="application/json",
         )
@@ -428,7 +490,7 @@ class UpdateSingleJobTest(TestCase):
     # DESCRIPTION
     def test_invalid_update_job_description_max_len_exceeded(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_invalid_description),
             content_type="application/json",
         )
@@ -437,7 +499,7 @@ class UpdateSingleJobTest(TestCase):
     # STATE
     def test_invalid_update_job_wrong_state(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_state),
             content_type="application/json",
         )
@@ -446,8 +508,35 @@ class UpdateSingleJobTest(TestCase):
     # PRIORITY
     def test_invalid_update_job_wrong_priority(self):
         response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_google.pk}),
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
             data=json.dumps(self.invalid_payload_priority),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # SALARY
+    def test_invalid_update_job_negative_salary(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
+            data=json.dumps(self.invalid_payload_negative_salary),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # COMMUTE TIME
+    def test_invalid_update_job_negative_commute_time(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
+            data=json.dumps(self.invalid_payload_negative_commute_time),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # VACATION DAYS
+    def test_invalid_update_job_negative_vacation_days(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
+            data=json.dumps(self.invalid_payload_negative_vacation_days),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -457,6 +546,8 @@ class DeleteSingleJobTest(TestCase):
     """Test module for deleting an existing Job record"""
 
     def setUp(self):
+        init_test_user()
+
         self.job_bloob = Job.objects.create(
             job_name="Software Engineer",
             company_name="Bloob",
