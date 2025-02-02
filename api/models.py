@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
 
 
 class Job(models.Model):
@@ -29,6 +30,7 @@ class Job(models.Model):
     salary = models.PositiveIntegerField()
     vacation_days = models.PositiveIntegerField()
     priority = models.IntegerField(choices=Priority.choices, default=Priority.LOW)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __repr__(self):
         return f"Job: {self.job_name} Company: {self.company_name}"

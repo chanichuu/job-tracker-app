@@ -14,6 +14,8 @@ def init_test_user():
     user.save()
     client.force_authenticate(user=user)
 
+    return user
+
 
 # initialize the APIClient app
 client = APIClient()
@@ -23,7 +25,7 @@ class GetAllJobsTest(TestCase):
     """Test module for GET all jobs API"""
 
     def setUp(self):
-        init_test_user()
+        test_user = init_test_user()
 
         Job.objects.create(
             job_name="Software Developer",
@@ -35,6 +37,7 @@ class GetAllJobsTest(TestCase):
             salary=80_000,
             vacation_days=15,
             priority=1,
+            user=test_user,
         )
         Job.objects.create(
             job_name="DevOps",
@@ -46,6 +49,7 @@ class GetAllJobsTest(TestCase):
             salary=100_000,
             vacation_days=15,
             priority=2,
+            user=test_user,
         )
         Job.objects.create(
             job_name="Tech Lead",
@@ -57,6 +61,7 @@ class GetAllJobsTest(TestCase):
             salary=80_000,
             vacation_days=21,
             priority=2,
+            user=test_user,
         )
         Job.objects.create(
             job_name="Software Engineer",
@@ -68,6 +73,7 @@ class GetAllJobsTest(TestCase):
             salary=80_000,
             vacation_days=10,
             priority=3,
+            user=test_user,
         )
 
     def test_get_all_jobs(self):
@@ -108,7 +114,7 @@ class GetSingleJobTest(TestCase):
     """Test module for GET single Job API"""
 
     def setUp(self):
-        init_test_user()
+        test_user = init_test_user()
 
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
@@ -120,6 +126,7 @@ class GetSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=15,
             priority=1,
+            user=test_user,
         )
         self.job_google = Job.objects.create(
             job_name="DevOps",
@@ -131,6 +138,7 @@ class GetSingleJobTest(TestCase):
             salary=100_000,
             vacation_days=15,
             priority=2,
+            user=test_user,
         )
         self.job_rakuten = Job.objects.create(
             job_name="Tech Lead",
@@ -142,6 +150,7 @@ class GetSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=21,
             priority=2,
+            user=test_user,
         )
         self.job_bloob = Job.objects.create(
             job_name="Software Engineer",
@@ -153,6 +162,7 @@ class GetSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=10,
             priority=3,
+            user=test_user,
         )
 
     def test_get_valid_single_job(self):
@@ -349,7 +359,7 @@ class UpdateSingleJobTest(TestCase):
     """Test module for updating an existing Job record"""
 
     def setUp(self):
-        init_test_user()
+        test_user = init_test_user()
 
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
@@ -361,6 +371,7 @@ class UpdateSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=15,
             priority=1,
+            user=test_user,
         )
         self.job_google = Job.objects.create(
             job_name="DevOps",
@@ -372,9 +383,10 @@ class UpdateSingleJobTest(TestCase):
             salary=100_000,
             vacation_days=15,
             priority=2,
+            user=test_user,
         )
 
-        self.valid_payload = self.valid_payload = {
+        self.valid_payload = {
             "job_name": "Software Developer",
             "company_name": "Mercarci",
             "location": "Roppongi",
@@ -546,7 +558,7 @@ class DeleteSingleJobTest(TestCase):
     """Test module for deleting an existing Job record"""
 
     def setUp(self):
-        init_test_user()
+        test_user = init_test_user()
 
         self.job_bloob = Job.objects.create(
             job_name="Software Engineer",
@@ -558,6 +570,7 @@ class DeleteSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=10,
             priority=3,
+            user=test_user,
         )
 
     def test_valid_delete_job(self):

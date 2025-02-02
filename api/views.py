@@ -42,7 +42,7 @@ class JobList(APIView):
     def get(self, request, format=None):
         state = self.request.query_params.get("state")
         priority = self.request.query_params.get("priority")
-        jobs = Job.objects.all()
+        jobs = Job.objects.filter(user=request.user)
 
         if state:
             jobs = jobs.filter(state=state)
@@ -60,10 +60,20 @@ class JobList(APIView):
     )
     def post(self, request, format=None):
         serializer = JobSerializer(data=request.data)
+        user = request.user
+        if user is None:
+            return Response(
+                {"Unauthorized:": "No valid user found"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
         if serializer.is_valid():
+            serializer.validated_data["user"] = user
+
             queryset = Job.objects.filter(
                 job_name=serializer.validated_data.get("job_name"),
                 company_name=serializer.validated_data.get("company_name"),
+                user=serializer.validated_data.get("user"),
             )
             if queryset.exists():
                 return Response(
@@ -97,6 +107,11 @@ class JobDetail(APIView):
     )
     def get(self, request, pk, format=None):
         job = self.get_object(pk)
+        if job.user != request.user:
+            return Response(
+                {"Forbidden:": "Job not accessible."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = JobSerializer(job)
 
         return Response(serializer.data)
@@ -109,6 +124,12 @@ class JobDetail(APIView):
     )
     def put(self, request, pk, format=None):
         job = self.get_object(pk)
+        if job.user != request.user:
+            return Response(
+                {"Forbidden:": "Job not accessible."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         serializer = JobSerializer(job, data=request.data)
         if serializer.is_valid():
             queryset = Job.objects.filter(id=pk)
@@ -140,6 +161,11 @@ class JobDetail(APIView):
     )
     def delete(self, request, pk, format=None):
         job = self.get_object(pk)
+        if job.user != request.user:
+            return Response(
+                {"Forbidden:": "Job not accessible."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         job.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
