@@ -4,17 +4,8 @@ from django.test import TestCase
 from django.urls import reverse
 from ..models import Job
 from ..serializers import JobSerializer
-from django.contrib.auth.models import User
+from .setup import init_test_user
 from rest_framework.test import APIClient
-
-
-def init_test_user():
-    user = User.objects.create(username="TEST_USER")
-    user.set_password("1234")
-    user.save()
-    client.force_authenticate(user=user)
-
-    return user
 
 
 # initialize the APIClient app
@@ -26,6 +17,7 @@ class GetAllJobsTest(TestCase):
 
     def setUp(self):
         test_user = init_test_user()
+        client.force_authenticate(user=test_user)
 
         Job.objects.create(
             job_name="Software Developer",
@@ -115,6 +107,7 @@ class GetSingleJobTest(TestCase):
 
     def setUp(self):
         test_user = init_test_user()
+        client.force_authenticate(user=test_user)
 
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
@@ -181,7 +174,8 @@ class CreateNewJobTest(TestCase):
     """Test module for inserting a new Job"""
 
     def setUp(self):
-        init_test_user()
+        test_user = init_test_user()
+        client.force_authenticate(user=test_user)
 
         self.valid_payload = {
             "job_name": "Software Developer",
@@ -360,6 +354,7 @@ class UpdateSingleJobTest(TestCase):
 
     def setUp(self):
         test_user = init_test_user()
+        client.force_authenticate(user=test_user)
 
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
@@ -559,6 +554,7 @@ class DeleteSingleJobTest(TestCase):
 
     def setUp(self):
         test_user = init_test_user()
+        client.force_authenticate(user=test_user)
 
         self.job_bloob = Job.objects.create(
             job_name="Software Engineer",

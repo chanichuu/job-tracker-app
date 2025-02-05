@@ -1,15 +1,13 @@
 from django.test import TestCase
 from ..models import Job
-from django.contrib.auth.models import User
+from .setup import init_test_user
 
 
 class JobTest(TestCase):
     """Test module for Job model"""
 
     def setUp(self):
-        test_user = User.objects.create(username="TEST_USER")
-        test_user.set_password("1234")
-        test_user.save()
+        test_user = init_test_user()
 
         Job.objects.create(
             job_name="Software Developer",

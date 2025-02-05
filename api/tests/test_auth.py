@@ -3,21 +3,14 @@ from rest_framework.test import APIClient
 from rest_framework import status
 import json
 from django.urls import reverse
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+
 from ..models import Job
+from .setup import init_test_user
+import os
 
 
 # initialize the APIClient app
 auth_client = APIClient()
-
-
-def init_test_user():
-    user = User.objects.create(username="TEST_USER")
-    user.set_password("1234")
-    user.save()
-
-    return user
 
 
 class CRUDJobsTest_Authorized(TestCase):
@@ -28,8 +21,8 @@ class CRUDJobsTest_Authorized(TestCase):
 
         # setup auth_client to get valid bearer token
         user_payload = {
-            "username": "TEST_USER",
-            "password": "1234",
+            "username": f"{os.getenv('TEST_USER')}",
+            "password": f"{os.getenv('TEST_PWD')}",
         }
         test_user_data = json.dumps(user_payload)
         response = auth_client.post(
