@@ -9,9 +9,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
+from .mixins import LoggingMixin
 
 
-class JobList(APIView):
+class JobList(LoggingMixin, APIView):
     """
     List all jobs, or create a new job.
     """
@@ -86,7 +87,7 @@ class JobList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class JobDetail(APIView):
+class JobDetail(LoggingMixin, APIView):
     """
     Retrieve, update or delete a job instance.
     """
