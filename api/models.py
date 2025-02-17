@@ -31,6 +31,37 @@ class Job(models.Model):
     vacation_days = models.PositiveIntegerField()
     priority = models.IntegerField(choices=Priority.choices, default=Priority.LOW)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    address = models.ForeignKey("Address", on_delete=models.CASCADE)
+    contact = models.ForeignKey("Contact", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Job information: {self.job_name} at {self.company_name} located in {self.location}"
 
     def __repr__(self):
-        return f"Job: {self.job_name} Company: {self.company_name}"
+        return f"Job({self.job_name} Company: {self.company_name} Location: {self.location})"
+
+
+class Address(models.Model):
+    street = models.CharField(max_length=128)
+    city = models.CharField(max_length=64)
+    state = models.CharField(max_length=64)
+    zip_code = models.CharField(max_length=10)
+    country = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"Address information: {self.street}, {self.city}, {self.state}, {self.zip_code}, {self.country}"
+
+    def __repr__(self):
+        return f"Address({self.street}, {self.city}, {self.state}, {self.zip_code}, {self.country})"
+
+
+class Contact(models.Model):
+    name = models.CharField(max_length=64)
+    phone = models.CharField(max_length=15)
+    email = models.EmailField()
+
+    def __str__(self):
+        return f"Contact information: {self.phone}, {self.email}, {self.address}"
+
+    def __repr__(self):
+        return f"Contact({self.phone}, {self.email}, {self.address})"
