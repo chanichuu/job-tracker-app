@@ -12,7 +12,6 @@ class JobTest(TestCase):
         Job.objects.create(
             job_name="Software Developer",
             company_name="Ebay",
-            location="Seattle",
             commute_time=60,
             description="Backend-Developer Job using Python and Django",
             state="APPLIED",
@@ -27,7 +26,6 @@ class JobTest(TestCase):
 
         self.assertEqual("Software Developer", job.job_name)
         self.assertEqual("Ebay", job.company_name)
-        self.assertEqual("Seattle", job.location)
         self.assertEqual(60, job.commute_time)
         self.assertEqual(
             "Backend-Developer Job using Python and Django", job.description

@@ -36,7 +36,6 @@ class JobSerializer(serializers.ModelSerializer):
             "id",
             "job_name",
             "company_name",
-            "location",
             "commute_time",
             "description",
             "state",
@@ -74,7 +73,6 @@ class JobSerializer(serializers.ModelSerializer):
         instance.company_name = validated_data.get(
             "company_name", instance.company_name
         )
-        instance.location = validated_data.get("location", instance.location)
         instance.commute_time = validated_data.get(
             "commute_time", instance.commute_time
         )

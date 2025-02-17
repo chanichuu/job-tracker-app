@@ -22,7 +22,6 @@ class GetAllJobsTest(TestCase):
         Job.objects.create(
             job_name="Software Developer",
             company_name="Mercarci",
-            location="Tokyo",
             commute_time=60,
             description="Backend-Developer Job using Python and Django",
             state="NEW",
@@ -34,7 +33,6 @@ class GetAllJobsTest(TestCase):
         Job.objects.create(
             job_name="DevOps",
             company_name="Google",
-            location="Tokyo",
             commute_time=60,
             description="DevOps Job using Python and Django",
             state="NEW",
@@ -46,7 +44,6 @@ class GetAllJobsTest(TestCase):
         Job.objects.create(
             job_name="Tech Lead",
             company_name="Rakuten",
-            location="Osaka",
             commute_time=30,
             description="Tech Lead position for Microservice Team",
             state="INTERVIEW",
@@ -58,7 +55,6 @@ class GetAllJobsTest(TestCase):
         Job.objects.create(
             job_name="Software Engineer",
             company_name="Bloob",
-            location="Sendai",
             commute_time=360,
             description="Backend-Developer Job using Python and Django",
             state="OFFER",
@@ -112,7 +108,6 @@ class GetSingleJobTest(TestCase):
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
             company_name="Mercarci",
-            location="Tokyo",
             commute_time=60,
             description="Backend-Developer Job using Python and Django",
             state="NEW",
@@ -124,7 +119,6 @@ class GetSingleJobTest(TestCase):
         self.job_google = Job.objects.create(
             job_name="DevOps",
             company_name="Google",
-            location="Tokyo",
             commute_time=60,
             description="DevOps Job using Python and Django",
             state="NEW",
@@ -136,7 +130,6 @@ class GetSingleJobTest(TestCase):
         self.job_rakuten = Job.objects.create(
             job_name="Tech Lead",
             company_name="Rakuten",
-            location="Osaka",
             commute_time=30,
             description="Tech Lead position for Microservice Team",
             state="INTERVIEW",
@@ -148,7 +141,6 @@ class GetSingleJobTest(TestCase):
         self.job_bloob = Job.objects.create(
             job_name="Software Engineer",
             company_name="Bloob",
-            location="Sendai",
             commute_time=360,
             description="Backend-Developer Job using Python and Django",
             state="OFFER",
@@ -180,7 +172,6 @@ class CreateNewJobTest(TestCase):
         self.valid_payload = {
             "job_name": "Software Developer",
             "company_name": "Docomo",
-            "location": "Roppongi",
             "commute_time": 45,
             "description": "Mid-level software engineering position",
             "state": "NEW",
@@ -217,11 +208,6 @@ class CreateNewJobTest(TestCase):
             "This company name is way too long to be a real company name."
         )
 
-        self.invalid_payload_invalid_location = self.valid_payload.copy()
-        self.invalid_payload_invalid_location["location"] = (
-            "This location is way too long to be a real location."
-        )
-
         self.invalid_payload_invalid_description = self.valid_payload.copy()
         self.invalid_payload_invalid_description["description"] = (
             "This description is way too long to be a real description." * 5
@@ -254,7 +240,6 @@ class CreateNewJobTest(TestCase):
         self.assertEqual(
             self.valid_payload["company_name"], response.data["company_name"]
         )
-        self.assertEqual(self.valid_payload["location"], response.data["location"])
         self.assertEqual(
             self.valid_payload["commute_time"], response.data["commute_time"]
         )
@@ -331,15 +316,6 @@ class CreateNewJobTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # LOCATION
-    def test_create_invalid_job_location_max_len_exceeded(self):
-        response = client.post(
-            reverse("job_list"),
-            data=json.dumps(self.invalid_payload_invalid_location),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
     # DESCRIPTION
     def test_create_invalid_job_description_max_len_exceeded(self):
         response = client.post(
@@ -405,7 +381,6 @@ class UpdateSingleJobTest(TestCase):
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
             company_name="Mercarci",
-            location="Tokyo",
             commute_time=60,
             description="Backend-Developer Job using Python and Django",
             state="NEW",
@@ -417,7 +392,6 @@ class UpdateSingleJobTest(TestCase):
         self.job_google = Job.objects.create(
             job_name="DevOps",
             company_name="Google",
-            location="Tokyo",
             commute_time=60,
             description="DevOps Job using Python and Django",
             state="NEW",
@@ -431,7 +405,6 @@ class UpdateSingleJobTest(TestCase):
         self.valid_payload = {
             "job_name": "Software Developer",
             "company_name": "Mercarci",
-            "location": "Roppongi",
             "commute_time": 45,
             "description": "Backend-Developer Job using Python and FastAPI",
             "state": "APPLIED",
@@ -469,11 +442,6 @@ class UpdateSingleJobTest(TestCase):
             "This company name is way too long to be a real company name."
         )
 
-        self.invalid_payload_invalid_location = self.valid_payload.copy()
-        self.invalid_payload_invalid_location["location"] = (
-            "This location is way too long to be a real location."
-        )
-
         self.invalid_payload_invalid_description = self.valid_payload.copy()
         self.invalid_payload_invalid_description["description"] = (
             "This description is way too long to be a real description." * 5
@@ -506,7 +474,6 @@ class UpdateSingleJobTest(TestCase):
         self.assertEqual(
             self.valid_payload["company_name"], response.data["company_name"]
         )
-        self.assertEqual(self.valid_payload["location"], response.data["location"])
         self.assertEqual(
             self.valid_payload["commute_time"], response.data["commute_time"]
         )
@@ -565,15 +532,6 @@ class UpdateSingleJobTest(TestCase):
         response = client.put(
             reverse("job_detail", kwargs={"pk": self.job_google.pk}),
             data=json.dumps(self.valid_payload),
-            content_type="application/json",
-        )
-        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-
-    # LOCATION
-    def test_invalid_update_job_location_max_len_exceeded(self):
-        response = client.put(
-            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
-            data=json.dumps(self.invalid_payload_invalid_location),
             content_type="application/json",
         )
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
@@ -643,7 +601,6 @@ class DeleteSingleJobTest(TestCase):
         self.job_bloob = Job.objects.create(
             job_name="Software Engineer",
             company_name="Bloob",
-            location="Sendai",
             commute_time=360,
             description="Backend-Developer Job using Python and Django",
             state="OFFER",

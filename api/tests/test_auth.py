@@ -37,7 +37,6 @@ class CRUDJobsTest_Authorized(TestCase):
         self.job_mercari = Job.objects.create(
             job_name="Software Developer",
             company_name="Mercarci",
-            location="Tokyo",
             commute_time=60,
             description="Backend-Developer Job using Python and Django",
             state="NEW",
@@ -59,7 +58,6 @@ class CRUDJobsTest_Authorized(TestCase):
         self.valid_payload = {
             "job_name": "Software Developer",
             "company_name": "Docomo",
-            "location": "Roppongi",
             "commute_time": 45,
             "description": "Mid-level software engineering position",
             "state": "NEW",
@@ -79,7 +77,6 @@ class CRUDJobsTest_Authorized(TestCase):
         valid_payload = {
             "job_name": "Software Developer",
             "company_name": "Mercarci",
-            "location": "Roppongi",
             "commute_time": 45,
             "description": "Backend-Developer Job using Python and Django",
             "state": "APPLIED",
