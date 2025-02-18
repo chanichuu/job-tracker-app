@@ -167,6 +167,10 @@ class JobDetail(LoggingMixin, APIView):
                 {"Forbidden:": "Job not accessible."},
                 status=status.HTTP_403_FORBIDDEN,
             )
+        if job.address:
+            job.address.delete()
+        if job.contact:
+            job.contact.delete()
         job.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
