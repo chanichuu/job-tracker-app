@@ -6,6 +6,7 @@ from ..models import Job
 from ..serializers import JobSerializer
 from .setup import init_test_user
 from rest_framework.test import APIClient
+import copy
 
 
 # initialize the APIClient app
@@ -187,7 +188,7 @@ class CreateNewJobTest(TestCase):
             },
             "contact": {
                 "name": "Test Contact",
-                "phone": "000-0000-0000",
+                "phone": "+818033083400",
                 "email": "test-constact@gmail.com",
             },
         }
@@ -227,6 +228,13 @@ class CreateNewJobTest(TestCase):
 
         self.invalid_payload_negative_vacation_days = self.valid_payload.copy()
         self.invalid_payload_negative_vacation_days["vacation_days"] = -10
+
+        self.invalid_payload_negative_contact_phonenumber = copy.deepcopy(
+            self.valid_payload
+        )
+        self.invalid_payload_negative_contact_phonenumber["contact"][
+            "phone"
+        ] = "-81abcd0000-"
 
     def test_create_valid_job(self):
         test_data = json.dumps(self.valid_payload)
@@ -289,7 +297,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_empty_job_name),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_create_invalid_job_job_name_max_len_exceeded(self):
         response = client.post(
@@ -297,7 +305,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_invalid_job_name),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     # COMPANY NAME
     def test_create_invalid_job_empty_company_name(self):
@@ -306,7 +314,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_empty_company_name),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     def test_create_invalid_job_company_name_max_len_exceeded(self):
         response = client.post(
@@ -314,7 +322,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_invalid_company_name),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     # DESCRIPTION
     def test_create_invalid_job_description_max_len_exceeded(self):
@@ -323,7 +331,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_invalid_description),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     # STATE
     def test_create_invalid_job_wrong_state(self):
@@ -332,7 +340,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_invalid_state),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     # PRIORITY
     def test_create_invalid_job_wrong_priority(self):
@@ -341,7 +349,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_invalid_priority),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     # SALARY
     def test_create_invalid_job_negative_salary(self):
@@ -350,7 +358,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_negative_salary),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     # COMMUTE TIME
     def test_create_invalid_job_negative_commute_time(self):
@@ -359,7 +367,7 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_negative_commute_time),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     # VACATION DAYS
     def test_create_invalid_job_negative_vacation_days(self):
@@ -368,7 +376,17 @@ class CreateNewJobTest(TestCase):
             data=json.dumps(self.invalid_payload_negative_vacation_days),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+    # CONTACT PHONE NUMBER
+    def test_create_invalid_job_negative_contact_phonenumber(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_negative_contact_phonenumber),
+            content_type="application/json",
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
 
 class UpdateSingleJobTest(TestCase):
@@ -421,7 +439,7 @@ class UpdateSingleJobTest(TestCase):
             },
             "contact": {
                 "name": "Test Contact 2",
-                "phone": "111-0000-0000",
+                "phone": "+818033083400",
                 "email": "test-constact2@gmail.com",
             },
         }
@@ -461,6 +479,13 @@ class UpdateSingleJobTest(TestCase):
 
         self.invalid_payload_negative_vacation_days = self.valid_payload.copy()
         self.invalid_payload_negative_vacation_days["vacation_days"] = -10
+
+        self.invalid_payload_negative_contact_phonenumber = copy.deepcopy(
+            self.valid_payload
+        )
+        self.invalid_payload_negative_contact_phonenumber["contact"][
+            "phone"
+        ] = "-81abcd0000-"
 
     # todo extend test to check for all properties to be updated correctly
     def test_valid_update_job(self):
@@ -588,6 +613,16 @@ class UpdateSingleJobTest(TestCase):
             data=json.dumps(self.invalid_payload_negative_vacation_days),
             content_type="application/json",
         )
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+    # CONTACT PHONE NUMBER
+    def test_invalid_update_job_negative_contact_phonenumber(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
+            data=json.dumps(self.invalid_payload_negative_contact_phonenumber),
+            content_type="application/json",
+        )
+
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
 
