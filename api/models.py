@@ -17,8 +17,8 @@ class Job(models.Model):
         MEDIUM = 2, _("Medium")
         LOW = 3, _("Low")
 
-    job_name = models.CharField(max_length=24)
-    company_name = models.CharField(max_length=24)
+    job_name = models.CharField(max_length=128)
+    company_name = models.CharField(max_length=128)
     commute_time = models.PositiveIntegerField()
     description = models.CharField(max_length=256)
     state = models.CharField(
