@@ -30,6 +30,7 @@ class Job(models.Model):
     salary = models.PositiveIntegerField()
     vacation_days = models.PositiveIntegerField()
     priority = models.IntegerField(choices=Priority.choices, default=Priority.LOW)
+    is_favourite = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.ForeignKey(
         "Address", on_delete=models.CASCADE, null=True, blank=True

@@ -29,6 +29,7 @@ class GetAllJobsTest(TestCase):
             salary=80_000,
             vacation_days=15,
             priority=1,
+            is_favourite=False,
             user=test_user,
         )
         Job.objects.create(
@@ -40,6 +41,7 @@ class GetAllJobsTest(TestCase):
             salary=100_000,
             vacation_days=15,
             priority=2,
+            is_favourite=False,
             user=test_user,
         )
         Job.objects.create(
@@ -51,6 +53,7 @@ class GetAllJobsTest(TestCase):
             salary=80_000,
             vacation_days=21,
             priority=2,
+            is_favourite=False,
             user=test_user,
         )
         Job.objects.create(
@@ -62,6 +65,7 @@ class GetAllJobsTest(TestCase):
             salary=80_000,
             vacation_days=10,
             priority=3,
+            is_favourite=False,
             user=test_user,
         )
 
@@ -115,6 +119,7 @@ class GetSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=15,
             priority=1,
+            is_favourite=False,
             user=test_user,
         )
         self.job_google = Job.objects.create(
@@ -126,6 +131,7 @@ class GetSingleJobTest(TestCase):
             salary=100_000,
             vacation_days=15,
             priority=2,
+            is_favourite=False,
             user=test_user,
         )
         self.job_rakuten = Job.objects.create(
@@ -137,6 +143,7 @@ class GetSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=21,
             priority=2,
+            is_favourite=False,
             user=test_user,
         )
         self.job_bloob = Job.objects.create(
@@ -148,6 +155,7 @@ class GetSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=10,
             priority=3,
+            is_favourite=False,
             user=test_user,
         )
 
@@ -179,6 +187,7 @@ class CreateNewJobTest(TestCase):
             "salary": 1_000_000,
             "vacation_days": 14,
             "priority": 1,
+            "is_favourite": False,
             "address": {
                 "street": "test-street 5",
                 "city": "Tokyo",
@@ -198,7 +207,7 @@ class CreateNewJobTest(TestCase):
 
         self.invalid_payload_invalid_job_name = self.valid_payload.copy()
         self.invalid_payload_invalid_job_name["job_name"] = (
-            "This job name is way too long to be a real job name."
+            "This job name is way too long to be a real job name." * 3
         )
 
         self.invalid_payload_empty_company_name = self.valid_payload.copy()
@@ -206,7 +215,7 @@ class CreateNewJobTest(TestCase):
 
         self.invalid_payload_invalid_company_name = self.valid_payload.copy()
         self.invalid_payload_invalid_company_name["company_name"] = (
-            "This company name is way too long to be a real company name."
+            "This company name is way too long to be a real company name." * 3
         )
 
         self.invalid_payload_invalid_description = self.valid_payload.copy()
@@ -219,6 +228,9 @@ class CreateNewJobTest(TestCase):
 
         self.invalid_payload_invalid_priority = self.valid_payload.copy()
         self.invalid_payload_invalid_priority["priority"] = "INVALID"
+
+        self.invalid_payload_invalid_is_favourite = self.valid_payload.copy()
+        self.invalid_payload_invalid_is_favourite["is_favourite"] = "INVALID"
 
         self.invalid_payload_negative_salary = self.valid_payload.copy()
         self.invalid_payload_negative_salary["salary"] = -1000
@@ -261,6 +273,9 @@ class CreateNewJobTest(TestCase):
             self.valid_payload["vacation_days"], response.data["vacation_days"]
         )
         self.assertEqual(self.valid_payload["priority"], response.data["priority"])
+        self.assertEqual(
+            self.valid_payload["is_favourite"], response.data["is_favourite"]
+        )
         # address validations
         self.assertEqual(
             self.valid_payload["address"]["street"], response.data["address"]["street"]
@@ -351,6 +366,15 @@ class CreateNewJobTest(TestCase):
         )
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
+    # IS_FAVOURITE
+    def test_create_invalid_job_wrong_is_favourite(self):
+        response = client.post(
+            reverse("job_list"),
+            data=json.dumps(self.invalid_payload_invalid_is_favourite),
+            content_type="application/json",
+        )
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
     # SALARY
     def test_create_invalid_job_negative_salary(self):
         response = client.post(
@@ -405,6 +429,7 @@ class UpdateSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=15,
             priority=1,
+            is_favourite=False,
             user=test_user,
         )
         self.job_google = Job.objects.create(
@@ -416,6 +441,7 @@ class UpdateSingleJobTest(TestCase):
             salary=100_000,
             vacation_days=15,
             priority=2,
+            is_favourite=False,
             user=test_user,
         )
 
@@ -430,6 +456,7 @@ class UpdateSingleJobTest(TestCase):
             "salary": 2000000,
             "vacation_days": 13,
             "priority": 1,
+            "is_favourite": True,
             "address": {
                 "street": "test-street 5",
                 "city": "Tokyo",
@@ -470,6 +497,9 @@ class UpdateSingleJobTest(TestCase):
 
         self.invalid_payload_priority = self.valid_payload.copy()
         self.invalid_payload_priority["priority"] = 15
+
+        self.invalid_payload_is_favourite = self.valid_payload.copy()
+        self.invalid_payload_is_favourite["is_favourite"] = "INVALID"
 
         self.invalid_payload_negative_salary = self.valid_payload.copy()
         self.invalid_payload_negative_salary["salary"] = -1000
@@ -518,6 +548,9 @@ class UpdateSingleJobTest(TestCase):
             self.valid_payload["vacation_days"], response.data["vacation_days"]
         )
         self.assertEqual(self.valid_payload["priority"], response.data["priority"])
+        self.assertEqual(
+            self.valid_payload["is_favourite"], response.data["is_favourite"]
+        )
 
     # JOB NAME
     def test_invalid_update_job_empty_job_name(self):
@@ -588,6 +621,15 @@ class UpdateSingleJobTest(TestCase):
         )
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
+    # IS_FAVOURITE
+    def test_invalid_update_job_wrong_is_favourite(self):
+        response = client.put(
+            reverse("job_detail", kwargs={"pk": self.job_mercari.pk}),
+            data=json.dumps(self.invalid_payload_is_favourite),
+            content_type="application/json",
+        )
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
     # SALARY
     def test_invalid_update_job_negative_salary(self):
         response = client.put(
@@ -642,6 +684,7 @@ class DeleteSingleJobTest(TestCase):
             salary=80_000,
             vacation_days=10,
             priority=3,
+            is_favourite=False,
             user=test_user,
         )
 

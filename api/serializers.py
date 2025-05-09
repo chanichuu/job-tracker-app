@@ -43,6 +43,7 @@ class JobSerializer(serializers.ModelSerializer):
             "salary",
             "vacation_days",
             "priority",
+            "is_favourite",
             "address",
             "contact",
         )
@@ -83,6 +84,9 @@ class JobSerializer(serializers.ModelSerializer):
             "vacation_days", instance.vacation_days
         )
         instance.priority = validated_data.get("priority", instance.priority)
+        instance.is_favourite = validated_data.get(
+            "is_favourite", instance.is_favourite
+        )
         instance.save()
 
         return instance

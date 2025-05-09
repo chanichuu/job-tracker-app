@@ -35,20 +35,29 @@ class JobList(LoggingMixin, APIView):
                 location=OpenApiParameter.QUERY,
                 description="Filter by priority. Valid values: 1, 2, 3",
             ),
+            OpenApiParameter(
+                name="isFavourite",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Filter all favourites. Valid values: True, False",
+            ),
         ],
         responses={200: JobSerializer(many=True), 401: None},
         methods=["GET"],
-        description="Get all jobs or jobs filtered by state or priority.",
+        description="Get all jobs or jobs filtered by state, priority or favourites.",
     )
     def get(self, request, format=None):
         state = self.request.query_params.get("state")
         priority = self.request.query_params.get("priority")
+        is_favourite = self.request.query_params.get("isFavourite")
         jobs = Job.objects.filter(user=request.user)
 
         if state:
             jobs = jobs.filter(state=state)
         if priority:
             jobs = jobs.filter(priority=priority)
+        if is_favourite:
+            jobs = jobs.filter(is_favourite=is_favourite)
         serializer = JobSerializer(jobs, many=True)
 
         return Response(serializer.data)
