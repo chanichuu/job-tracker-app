@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "phonenumber_field",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "job_tracker.urls"
@@ -189,3 +191,5 @@ LOGGING = {
         },
     },
 }
+
+CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_HOST_URL")]
