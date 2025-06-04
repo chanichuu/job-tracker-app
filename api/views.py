@@ -1,24 +1,26 @@
-from django.shortcuts import render
 from django.http import Http404
-from rest_framework import status
-from .serializers import JobSerializer
+from rest_framework import status, generics
+from .serializers import JobSerializer, UserSerializer
+from django.contrib.auth.models import User
 from .models import Job
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from .mixins import LoggingMixin
+from rest_framework.permissions import AllowAny
+
+
+class CreateUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
 
 
 class JobList(LoggingMixin, APIView):
     """
     List all jobs, or create a new job.
     """
-
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         parameters=[
@@ -100,9 +102,6 @@ class JobDetail(LoggingMixin, APIView):
     """
     Retrieve, update or delete a job instance.
     """
-
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def get_object(self, pk):
         try:
