@@ -43,6 +43,12 @@ class JobList(LoggingMixin, APIView):
                 location=OpenApiParameter.QUERY,
                 description="Filter all favourites. Valid values: True, False",
             ),
+            OpenApiParameter(
+                name="beginsWith",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Filter jobs where job_name begins with beginsWith string",
+            ),
         ],
         responses={200: JobSerializer(many=True), 401: None},
         methods=["GET"],
@@ -52,6 +58,7 @@ class JobList(LoggingMixin, APIView):
         state = self.request.query_params.get("state")
         priority = self.request.query_params.get("priority")
         is_favourite = self.request.query_params.get("isFavourite")
+        begins_with = self.request.query_params.get("beginsWith")
         jobs = Job.objects.filter(user=request.user)
 
         if state:
@@ -60,6 +67,8 @@ class JobList(LoggingMixin, APIView):
             jobs = jobs.filter(priority=priority)
         if is_favourite:
             jobs = jobs.filter(is_favourite=is_favourite)
+        if begins_with:
+            jobs = jobs.filter(job_name__istartswith=begins_with)
         serializer = JobSerializer(jobs, many=True)
 
         return Response(serializer.data)
