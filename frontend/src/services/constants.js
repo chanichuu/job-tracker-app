@@ -1,0 +1,5 @@
+export const ACCESS_TOKEN = "access-token"
+export const REFRESH_TOKEN = "refresh-token"
+export const BASE_URL = "http://localhost:8000/"
+export const API_PATH = "api/jobs"
+export const AUTH_PATH = "api/token/"

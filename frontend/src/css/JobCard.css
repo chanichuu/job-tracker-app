@@ -1,0 +1,125 @@
+.job-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: rgb(44, 44, 44);
+  transition: transform 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.job-card:hover {
+  background-color: rgb(37, 37, 37);
+}
+
+.job-name {
+  position: relative;
+  aspect-ratio: 1/2;
+  width: 100%;
+}
+
+.job-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.8)
+  );
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: auto;
+}
+
+.job-card:hover .job-overlay {
+  opacity: 1;
+}
+
+h1 {
+  padding: auto;
+}
+
+.fav-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: white;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.fav-btn:hover {
+  background-color: rgba(29, 29, 29, 0.8);
+}
+
+.fav-btn.favorited {
+  background-color: white; /* Red background for favorite */
+  color: rgb(161, 50, 50); /* White heart symbol */
+  border-color: rgb(139, 37, 26);
+}
+
+.edit-btn {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: rgba(34, 34, 34, 0.8);
+}
+
+.rmv-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.rmv-btn:hover {
+  background-color: rgba(34, 34, 34, 0.8);
+}
+
+.job-info {
+  position: absolute;
+  bottom: 0;
+  top: 60%;
+  right: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+}

@@ -1,0 +1,71 @@
+.navbar {
+  background-color: rgb(49, 49, 49);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav-brand {
+  color: rgb(255, 255, 255);
+}
+
+.nav-brand:hover {
+  color: rgb(181, 145, 235);
+}
+
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: rgb(255, 255, 255);
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgb(181, 145, 235);
+}
+
+.auth-button {
+  background-color: rgb(49, 49, 49);
+  padding: 8px 15px; /* Adjust padding for size */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Indicate it's clickable */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+}
+
+.auth-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgb(181, 145, 235);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  .navbar-links {
+    gap: 1rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem;
+  }
+}

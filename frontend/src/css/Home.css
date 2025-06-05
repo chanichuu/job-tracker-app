@@ -1,0 +1,27 @@
+.home {
+  padding: 2rem 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+h1,
+h3 {
+  text-align: center;
+  padding: 1rem;
+}
+
+@media (max-width: 639px) {
+  .home {
+    padding: 1rem 0;
+  }
+}
+
+.job-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
+  padding: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin: auto;
+}
