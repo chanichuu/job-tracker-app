@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Job, Address, Contact
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,12 +13,15 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        print(validated_data)
         user = User.objects.create_user(**validated_data)
         return user
 
 
 class AddressSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(
+        required=False
+    )  # explicitly define id to access it in validated_data while updating a job object
+
     class Meta:
         model = Address
         fields = (
@@ -29,6 +35,10 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(
+        required=False
+    )  # explicitly define id to access it in validated_data while updating a job object
+
     class Meta:
         model = Contact
         fields = (
@@ -76,12 +86,13 @@ class JobSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         address_data = validated_data.pop("address", None)
         contact_data = validated_data.pop("contact", None)
-        if address_data:
-            address = Address.objects.get_or_create(**address_data)[0]
-            instance.address = address
-        if contact_data:
-            contact = Contact.objects.get_or_create(**contact_data)[0]
-            instance.contact = contact
+
+        logger.debug(f"Address: {address_data}")
+        logger.debug(f"Contact: {contact_data}")
+
+        self.update_address(instance, validated_data, address_data)
+
+        self.update_contact(instance, validated_data, contact_data)
 
         instance.job_name = validated_data.get("job_name", instance.job_name)
         instance.company_name = validated_data.get(
@@ -100,6 +111,61 @@ class JobSerializer(serializers.ModelSerializer):
         instance.is_favourite = validated_data.get(
             "is_favourite", instance.is_favourite
         )
+
         instance.save()
 
         return instance
+
+    def update_contact(self, instance, validated_data, contact_data):
+        if contact_data is not None:
+            contact_id = contact_data.get("id")
+            if contact_id:
+                try:
+                    contact_instance = Contact.objects.get(id=contact_id)
+                    logger.debug(f"Contact found: {contact_instance}")
+                    contact_instance.save()
+                    instance.contact = contact_instance
+                except Contact.DoesNotExist:
+                    print(
+                        f"Contact with ID {contact_id} not found, creating a new one."
+                    )
+                    new_contact = Contact.objects.create(**contact_data)
+                    instance.contact = new_contact
+                except Contact.MultipleObjectsReturned:
+                    raise serializers.ValidationError(
+                        {
+                            "contact": "Multiple Contact objects found for the given ID. Data inconsistency."
+                        }
+                    )
+            else:
+                contact, _ = Contact.objects.get_or_create(**contact_data)
+                instance.contact = contact
+        else:
+            instance.contact = None
+
+    def update_address(self, instance, validated_data, address_data):
+        if address_data is not None:
+            address_id = address_data.get("id")
+            if address_id:
+                try:
+                    address_instance = Address.objects.get(id=address_id)
+                    address_instance.save()
+                    instance.address = address_instance
+                except Address.DoesNotExist:
+                    logger.debug(
+                        f"Address with ID {address_id} not found, creating a new one."
+                    )
+                    new_address = Address.objects.create(**address_data)
+                    instance.address = new_address
+                except Address.MultipleObjectsReturned:
+                    # This should ideally not happen if using ID, but as a safeguard.
+                    raise serializers.ValidationError(
+                        {
+                            "address": "Multiple Address objects found for the given ID. Data inconsistency."
+                        }
+                    )
+            else:
+                address, _ = Address.objects.get_or_create(**address_data)
+                instance.address = address
+        else:
+            instance.address = None

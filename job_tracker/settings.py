@@ -168,6 +168,9 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": "logs/job-tracker-app.log",
@@ -183,10 +186,13 @@ LOGGING = {
         },
     },
     "loggers": {
+        "api": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
         "django.request": {
             "handlers": ["file"],
             "level": "DEBUG",
-            "propagate": True,
         },
     },
 }

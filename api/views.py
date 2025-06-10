@@ -9,6 +9,10 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from .mixins import LoggingMixin
 from rest_framework.permissions import AllowAny
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -147,11 +151,9 @@ class JobDetail(LoggingMixin, APIView):
                 {"Forbidden:": "Job not accessible."},
                 status=status.HTTP_403_FORBIDDEN,
             )
-
         serializer = JobSerializer(job, data=request.data)
         if serializer.is_valid():
             queryset = Job.objects.filter(id=pk)
-
             if queryset.exists():
                 if queryset[0].job_name != serializer.validated_data.get(
                     "job_name"
@@ -162,7 +164,6 @@ class JobDetail(LoggingMixin, APIView):
                         {"Bad Request:": "Job and company name cannot be updated."},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-
             serializer.save()
             return Response(serializer.data)
 
