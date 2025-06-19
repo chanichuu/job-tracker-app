@@ -1,0 +1,81 @@
+.create-form-div {
+  text-align: center;
+  height: 800px;
+  width: 800px;
+  margin: auto;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid rgba(41, 41, 41, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  max-width: 800px;
+}
+
+.input-div {
+  align-items: left;
+  justify-content: left;
+}
+
+.form-input {
+  width: 50%;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.sub-button {
+  width: 30%;
+  padding: 10px;
+  margin: 20px 0;
+  background-color: rgb(112, 9, 229);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.sub-button:hover {
+  background-color: rgb(97, 7, 201);
+}
+
+.form-button {
+  width: 20%;
+  padding: 10px;
+  margin: 5px 0;
+  background-color: rgb(102, 78, 142);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.form-button:hover {
+  background-color: rgb(55, 41, 78);
+}
+
+.cancel-button {
+  width: 30%;
+  padding: 10px;
+  margin: 20px 0;
+  background-color: rgb(195, 31, 75);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.cancel-button:hover {
+  background-color: rgb(152, 23, 57);
+}

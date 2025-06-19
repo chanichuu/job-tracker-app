@@ -4,8 +4,8 @@ import "../css/SearchBar.css"
 function SearchBar ({ onSearch }) {
     const [searchQuery, setSearchQuery] = useState("");
 
-    const handleSearch = async (e) => {
-      e.preventDefault(); 
+    const handleSearch = async (event) => {
+      event.preventDefault(); 
       console.log("Search initiated for:", searchQuery);
       if (onSearch) {
         await onSearch(searchQuery);

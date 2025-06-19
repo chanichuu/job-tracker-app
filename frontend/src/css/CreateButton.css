@@ -1,0 +1,19 @@
+.create-button {
+  padding: 0.75rem 1.5rem;
+  background-color: rgb(195, 31, 75);
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.create-button:hover {
+  background-color: rgb(174, 27, 66);
+}
+
+@media (max-width: 639px) {
+  .create-form {
+    margin-bottom: 1rem;
+  }
+}

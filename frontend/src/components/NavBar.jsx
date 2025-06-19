@@ -27,7 +27,6 @@ function NavBar() {
                   {location.pathname !== '/login' && (
                     <Link to="/login" className="nav-link">Login</Link>
                   )}
-                  {/* Conditionally render Sign up link */}
                   {location.pathname !== '/register' && (
                     <Link to="/register" className="nav-link">Sign up</Link>
                   )}

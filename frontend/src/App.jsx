@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import JobForm from "./components/JobForm";
 import "./css/App.css";
 import Favourites from "./pages/Favourites";
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<RegisterAndLogout />} />
+          <Route path="/post" element={<ProtectedRoute><JobForm /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>

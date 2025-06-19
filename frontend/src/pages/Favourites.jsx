@@ -24,7 +24,7 @@ function Favourites () {
         }, []);
 
     return <div className="favourites">
-        <h1>Your job favourites</h1>
+        <h1>Your favourite jobs:</h1>
         <div className="job-grid">
           {favourites?.map((job) => (
             <JobCard job={job} key={job.id} />
