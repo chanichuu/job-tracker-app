@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { API_PATH } from "../services/constants";
 import "../css/Home.css"
 import api from "../services/auth";
+import handleDelete from "../services/api";
 
 function Home() {
     const [jobs, setJobs] = useState([]);
@@ -28,26 +29,6 @@ function Home() {
       } catch (err) {
         console.error("Failed to fetch jobs:", err);
         setError("Failed to load jobs. Please try again.");
-      }
-    }, [API_PATH]);
-
-    const handleDelete = useCallback(async (query = "") => {
-      setError(null);
-      console.log("query: ", query)
-      try {
-        if (query === null || query === 'undefined') {
-          console.error("no id found")
-          setError("Failed to delete job. Please try again later.")
-        } else {
-          const apiUrl = `${API_PATH}/${encodeURIComponent(query)}`
-  
-          const res = await api.delete(apiUrl);
-          alert("Job deleted successfully!")
-          console.log("Deleted Job with response:", res.data);
-        }
-      } catch (err) {
-        console.error("Failed to delete job:", err);
-        setError("Failed to delete job. Please try again later.");
       }
     }, [API_PATH]);
 
