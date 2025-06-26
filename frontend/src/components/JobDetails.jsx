@@ -1,16 +1,21 @@
+import { useLocation } from "react-router-dom";
+
 function JobDetails({ formData, onChange, onNext }) {
     console.log("current step: job details...")
+    const location = useLocation();
+    const currentAction = location.state?.currentAction || "";
+    
     return (
         <form onSubmit={onNext} className="create-form">
             <h3>Job details:</h3>
             <div className="input-div">
                 <label className="form-label">Job Title 
-                    <input type="text" className="form-input" name="jobTitle" value={formData.jobTitle} onChange={onChange} required maxLength="128"/>
+                    <input type="text" className="form-input" name="jobTitle" value={formData.jobTitle} onChange={onChange} readOnly={currentAction === "edit"} required maxLength="128"/>
                 </label>
             </div>
             <div className="input-div">
                 <label className="form-label">Company 
-                    <input type="text" className="form-input" name="company" value={formData.company} onChange={onChange} required maxLength="128"/>
+                    <input type="text" className="form-input" name="company" value={formData.company} onChange={onChange} readOnly={currentAction === "edit"} required maxLength="128"/>
                 </label>
             </div>
             <div className="input-div">

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate  } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import JobDetails from "./JobDetails"
 import AddressDetails from "./AddressDetails";
 import ContactDetails from "./ContactDetails";
@@ -16,8 +16,26 @@ function JobForm() {
          },
         step3: { name: '', phoneNumber: '', email: '' }
       });
-    const [error, setError] = useState(null);
+    const location = useLocation();
     const navigate = useNavigate();
+    const currentAction = location.state?.currentAction || "";
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+      if (currentAction === "edit") {
+        let jobToEdit = retrieveJobToEdit();
+
+        console.log("Editing current job...")
+        setFormData({
+          step1: { jobTitle: jobToEdit.job_name, company: jobToEdit.company_name, commuteTime: jobToEdit.commute_time, description: jobToEdit.description,
+             jobState: jobToEdit.state, salary: jobToEdit.salary, paidLeave: jobToEdit.vacation_days, jobPriority: jobToEdit.priority},
+          step2: { street: jobToEdit.address.street, city: jobToEdit.address.city, state: jobToEdit.address.state,
+              zipCode: jobToEdit.address.zip_code, country: jobToEdit.address.country
+           },
+          step3: { name: jobToEdit.contact.name, phoneNumber: jobToEdit.contact.phone, email: jobToEdit.contact.email }
+        });
+      }
+    }, [location.state, currentAction, navigate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -32,7 +50,6 @@ function JobForm() {
         });
     };
 
-    // todo test this!
     const handleSubmit = async (event) => {
         console.log("submitting data to backend...")
 
@@ -64,16 +81,60 @@ function JobForm() {
         console.log(job)
    
         try {
-          const response = await api.post(API_PATH, job);   
-          console.log('Response:', response.data);
-          // handle successful response, go back to home?
-          alert("Job created successfully!")
-          navigate("/");
+          if (currentAction === "edit") {
+            let jobId = getCurrentJobId()
+            if (jobId === null || jobId === undefined) {
+              console.error('Error: No job id found. Cannot update job.')
+              setError("Error updating job."); // todo show proper error message to user
+              navigate("/")
+            } else {
+              job.id = jobId;
+              const response = await api.put(API_PATH+"/"+jobId, job)
+              console.log('PUT Response:', response.data)
+              alert("Job updated successfully!")
+            }
+          } else {
+            const response = await api.post(API_PATH, job);
+            console.log('POST Response:', response.data);
+            // handle successful response, go back to home?
+            alert("Job created successfully!")
+          }
+          // clear local storage
+          localStorage.removeItem("editingJob")
+          navigate("/")
         } catch (error) {
-          console.error('Error:', error);
+          console.error('Error:', error)
           setError(error)
         }
     };
+
+    const getCurrentJobId = () => {
+      let jobToEdit = retrieveJobToEdit();
+
+      return jobToEdit.id;
+    }
+
+    const retrieveJobToEdit = () => {
+        const jobFromNav = location.state?.currentJob;
+        const jobFromStorage = localStorage.getItem("editingJob");
+        let jobToEdit = null;
+
+        if (jobFromNav) {
+          jobToEdit = jobFromNav;
+          localStorage.setItem("editingJob", JSON.stringify(jobFromNav));
+        } else if (jobFromStorage) {
+          jobToEdit = JSON.parse(jobFromStorage);
+        }
+        if (!jobToEdit) {
+          // If trying to edit without a job, redirect or show error
+          console.error("No job provided for editing");
+          setError("No job data found. Redirecting to job list...");
+          setTimeout(() => navigate("/jobs"), 2000);
+          return;
+        }
+
+        return jobToEdit;
+    }
 
     const handleCancel = () => {
         console.log("Returning to Home...");
@@ -90,7 +151,7 @@ function JobForm() {
 
     return (
         <div className="create-form-div">
-            <h1>Create a new job:</h1>
+            { currentAction === "edit" && <h1>Edit job:</h1> || <h1>Create a new job:</h1>}
             { formStep === 1 && <JobDetails formData={formData.step1} onChange={handleInputChange} onNext={nextStep}/>}
             { formStep === 2 && <AddressDetails formData={formData.step2} onChange={handleInputChange} onNext={nextStep} onPrev={prevStep}/>}
             { formStep === 3 && <ContactDetails formData={formData.step3} onChange={handleInputChange} onPrev={prevStep} handleSubmit={handleSubmit}/>}

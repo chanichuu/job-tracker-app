@@ -1,5 +1,6 @@
 import "../css/JobCard.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/auth";
 import { API_PATH } from "../services/constants";
 
@@ -7,6 +8,7 @@ function JobCard ({job, setCurrentJob, setShowPopUp, setCurrentAction }) {
     const [isFavorite, setIsFavorite] = useState(job.is_favourite);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);  
+    const navigate = useNavigate();
 
     const handleToggleFavorite = async () => {
       setLoading(true);
@@ -21,13 +23,23 @@ function JobCard ({job, setCurrentJob, setShowPopUp, setCurrentAction }) {
   
         setIsFavorite(response.data.is_favourite);
         console.log("Job favorite status updated:", response.data);
-  
       } catch (err) {
         console.error("Failed to toggle favorite status:", err);
         setError("Failed to update favorite status.");
       } finally {
         setLoading(false);
       }
+    };
+
+    const handleEditButtonClick = () => {
+      setCurrentJob(job)
+      setCurrentAction("edit")
+      navigate("/post", {
+        state: {
+          currentJob: job,
+          currentAction: "edit"
+        }
+      })
     };
 
     const handleDeleteButtonClick = () => {
@@ -54,11 +66,12 @@ function JobCard ({job, setCurrentJob, setShowPopUp, setCurrentAction }) {
                   >
                   {loading ? "..." : "♥"}
               </button>
-              <button className="edit-btn" onClick={() => setCurrentJob(job)}>
-                  ✏️ {/* todo: add edit functionality */}
+              <button className="edit-btn" onClick={handleEditButtonClick}>
+                  ✏️ 
               </button>
+              {/* todo: add details button */}
               <button className="rmv-btn" onClick={handleDeleteButtonClick}>
-                  X {/* todo: add remove functionality */}
+                  X
               </button>
             </div>
         </div>

@@ -1,9 +1,5 @@
-import { useState } from "react";
-
-
-function AddressDetails({ formData, onChange, onNext, onPrev }) {
+function AddressDetails({ formData, onChange, onNext, onPrev }) { 
     console.log("current step: address details...")
-
     return (
         <form onSubmit={onNext} className="create-form">
             <h3>Address details:</h3>

@@ -1,9 +1,5 @@
-import { useState } from "react";
-
-
 function ContactDetails({ formData, onChange, onPrev, handleSubmit }) {
     console.log("current step: contact details...")
-
     return (
         <form onSubmit={handleSubmit} className="create-form">
             <h3>Contact details:</h3>
