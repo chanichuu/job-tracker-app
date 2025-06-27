@@ -43,7 +43,8 @@ function Home() {
         <h3>Showing all your current jobs. Filter by job name.</h3>
         <SearchBar onSearch={fetchJobs}/>
         {error && <div className="error-message">{error}</div>}
-        { showPopUp && currentAction === "delete" && <PopUp title="Delete job?" text="Do you want to delete this job:" job={currentJob} onClick={handleDelete} setShowPopUp={setShowPopUp} setCurrentAction={setCurrentAction} setCurrentJob={setCurrentJob}></PopUp>}
+        { showPopUp && currentAction === "delete" && <PopUp title="Delete job?" text="Do you want to delete this job:" job={currentJob} onClick={handleDelete} currentAction={currentAction} setShowPopUp={setShowPopUp} setCurrentAction={setCurrentAction} setCurrentJob={setCurrentJob}></PopUp>}
+        { showPopUp && currentAction === "details" && <PopUp title="Details" text="" job={currentJob} currentAction={currentAction} setShowPopUp={setShowPopUp} setCurrentAction={setCurrentAction} setCurrentJob={setCurrentJob}></PopUp>}
         <div className="job-grid">
           {jobs?.map((job) => (
             <JobCard job={job} key={job.id} setCurrentJob={setCurrentJob} setShowPopUp={setShowPopUp} setCurrentAction={setCurrentAction}/>

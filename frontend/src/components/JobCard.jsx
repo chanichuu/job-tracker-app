@@ -49,6 +49,13 @@ function JobCard ({job, setCurrentJob, setShowPopUp, setCurrentAction }) {
       setShowPopUp(true);
     };
 
+    const handleDetailsButtonClick = () => {
+      console.log("details button clicked!")
+      setCurrentJob(job);
+      setCurrentAction("details")
+      setShowPopUp(true);
+    };
+
     return (
       <div className="job-card">
         <div className="job-name">
@@ -69,7 +76,9 @@ function JobCard ({job, setCurrentJob, setShowPopUp, setCurrentAction }) {
               <button className="edit-btn" onClick={handleEditButtonClick}>
                   ✏️ 
               </button>
-              {/* todo: add details button */}
+              <button className="dtl-btn" onClick={handleDetailsButtonClick}>
+                  ...
+              </button>
               <button className="rmv-btn" onClick={handleDeleteButtonClick}>
                   X
               </button>

@@ -82,7 +82,7 @@ h1 {
   left: 1rem;
   font-size: 1.5rem;
   padding: 0.5rem;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(54, 54, 54);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -96,13 +96,33 @@ h1 {
   background-color: rgba(34, 34, 34, 0.8);
 }
 
+.dtl-btn {
+  position: absolute;
+  bottom: 1rem;
+  left: 45%;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  background-color: rgb(54, 54, 54);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.dtl-btn:hover {
+  background-color: rgba(34, 34, 34, 0.8);
+}
+
 .rmv-btn {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
   font-size: 1.5rem;
   padding: 0.5rem;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(54, 54, 54);
   border-radius: 50%;
   width: 40px;
   height: 40px;

@@ -35,6 +35,7 @@ function Favourites () {
     return <div className="favourites">
         <h1>Your favourite jobs:</h1>
         { showPopUp && currentAction === "delete" && <PopUp title="Delete job?" text="Do you want to delete this job:" job={currentJob} onClick={handleDelete} setShowPopUp={setShowPopUp} setCurrentAction={setCurrentAction} setCurrentJob={setCurrentJob}></PopUp>}
+        { showPopUp && currentAction === "details" && <PopUp title="Details" text="" job={currentJob} currentAction={currentAction} setShowPopUp={setShowPopUp} setCurrentAction={setCurrentAction} setCurrentJob={setCurrentJob}></PopUp>}
         <div className="job-grid">
           {favourites?.map((job) => (
             <JobCard job={job} key={job.id} setCurrentJob={setCurrentJob} setShowPopUp={setShowPopUp} setCurrentAction={setCurrentAction}/>
